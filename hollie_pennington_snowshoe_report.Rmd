@@ -1,0 +1,79 @@
+---
+title: "ESM 206 A3 Task2"
+author: "Hollie Pennington"
+date: "11/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE, warnings = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+```
+
+```{r}
+snowshoe <- read_csv(here("data","bonanza_hares.csv")) %>% 
+  clean_names() %>% 
+  mutate(date = mdy(date)) %>% 
+  mutate(year = year(date))
+```
+
+#INTRODUCTION HERE 
+## DATA ANALYSES HERE 
+
+
+```{r}
+j_snowshoe <- snowshoe %>% 
+  filter(age == "j") %>% 
+  group_by(age, year) %>% 
+  summarise(total = n())
+```
+
+```{r}
+ggplot(data = j_snowshoe, aes(x = year, y = total)) + 
+  geom_col() + 
+  labs(title = "Annual juvenile hare trap count", x = "Year", y = "Total number of juvenile hares") + 
+  theme_test()
+```
+<b> Figure 1 </b> 
+
+
+#Data analysis: 
+
+
+```{r}
+j_snowshoe_stats <- j_snowshoe %>% 
+  summarise(minimum = min(total), 
+            maximum = max(total), 
+            mean = mean(total, ra.nm = TRUE), 
+            median = median(total, ra.nm = TRUE), 
+            total = n())
+```
+
+#Juvenile Hare Weights 
+
+```{r}
+weights_j_snowshoe <- snowshoe %>% 
+  filter(age == "j") %>% 
+  group_by(age, weight, grid, sex) %>% 
+  summarise(total =n())
+```
+
+```{r}
+ggplot(data = weights_j_snowshoe, aes(x = weight)) + 
+  geom_histogram(binwidth = 15) +
+  facet_wrap(~ grid) + 
+  labs(title = "Juvenile snowshoe weight", 
+       y = "Number of hares", 
+       x = "Hare weight (g)") + 
+  theme_bw()
+```
+
+```{r}
+
+```
+
+
+
