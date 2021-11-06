@@ -11,6 +11,7 @@ library(here)
 library(tidyverse)
 library(janitor)
 library(lubridate)
+library(kableExtra)
 ```
 
 ```{r}
@@ -62,18 +63,48 @@ weights_j_snowshoe <- snowshoe %>%
 ```
 
 ```{r}
-ggplot(data = weights_j_snowshoe, aes(x = weight)) + 
-  geom_histogram(binwidth = 15) +
-  facet_wrap(~ grid) + 
-  labs(title = "Juvenile snowshoe weight", 
+ggplot(data = weights_j_snowshoe, aes(x = weight, fill = sex)) + 
+  geom_histogram(position = position_dodge(), binwidth = 40) +
+  facet_wrap(~ grid) +
+  labs(title = "Juvenile snowshoe weight by site", 
        y = "Number of hares", 
-       x = "Hare weight (g)") + 
-  theme_bw()
+       x = "Hare weight (g)")
+  theme(legend.position = c(0.1, 0.8))
+```
+FIGURE 2 GOES HERE 
+
+Analysis goes here 
+#Juvenile hare weight comparison (male & female snowshoe hares)
+
+```{r}
+stats_snowshoe <- weights_j_snowshoe %>% 
+  group_by(sex) %>% 
+  summarise(mean = mean(weight, na.rm = TRUE),
+            standard_deviation = sd(weight, na.rm = TRUE),
+            sample_size = n())
 ```
 
 ```{r}
-
+stats_snowshoe %>% 
+kable(col.name = c("Sex", "Mean Weight (g)", "Standard Deviation (g)", "Sample Size")) %>% 
+  kable_styling(full_width = FALSE)
 ```
 
+ADD IN CAPTION AND DATA ANAYLSIS 
 
+
+#Relationship between juvenile weight and hind foot length 
+
+```{r}
+j_snowshoe <- snowshoe %>% 
+  filter(age == "j") %>% 
+  group_by(weight, hindft) %>% 
+  summarise(total = n())
+```
+
+```{r}
+ggplot(data = j_snowshoe, aes(y = weight, x = hindft)) + 
+  geom_jitter() + 
+  labs(titel = "Juvenile hares weight vs hindfeet", x = "Hindfeet Length (mm)", y = "Weight (g)")
+```
 
