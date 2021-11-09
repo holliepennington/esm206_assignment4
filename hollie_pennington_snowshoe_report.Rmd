@@ -5,8 +5,9 @@ date: "11/4/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE, warnings = FALSE}
+```{r setup, include = FALSE, warnings = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#install packages
 library(here)
 library(tidyverse)
 library(janitor)
@@ -19,9 +20,13 @@ snowshoe <- read_csv(here("data","bonanza_hares.csv")) %>%
   clean_names() %>% 
   mutate(date = mdy(date)) %>% 
   mutate(year = year(date))
+#read in data 
+#made a year column using mutate
 ```
 
 #INTRODUCTION HERE 
+##Citation: Kielland, K., F.S. Chapin, R.W. Ruess, and Bonanza Creek LTER. 2017. Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present ver 22. Environmental Data Initiative. https://doi.org/10.6073/pasta/03dce4856d79b91557d8e6ce2cbcdc14
+
 ## DATA ANALYSES HERE 
 
 
@@ -30,6 +35,7 @@ j_snowshoe <- snowshoe %>%
   filter(age == "j") %>% 
   group_by(age, year) %>% 
   summarise(total = n())
+#created new data frame including only juvenile hares and they are grouped by age and year. 
 ```
 
 ```{r}
@@ -37,11 +43,12 @@ ggplot(data = j_snowshoe, aes(x = year, y = total)) +
   geom_col() + 
   labs(title = "Annual juvenile hare trap count", x = "Year", y = "Total number of juvenile hares") + 
   theme_test()
+#created bar graph comparing year to the number of hares trapped 
 ```
-<b> Figure 1 </b> 
+<b> Figure 1: </b> This graph above represents the total number of juvenile hare trappings from year 1998 to 2012. The year with the most trappings is 1999. The year with the least trappings is 2010.     
 
 
-#Data analysis: 
+#Data analysis: The minimum amount of snowshoes that were found in one single year was 2. The highest number of snowshoes found in one year was 126. The median amount of snowshoes being trapped throughout the years is 18.5. The mean amount of hares trapped every year was 12. I suspect that there are confounding factors such as effort, number of traps, and hare location at play that inpacted the data. In future studies the confouding factors can be reduced by making sure all human efforts and methods are consistent throughout the years. 
 
 
 ```{r}
@@ -51,6 +58,7 @@ j_snowshoe_stats <- j_snowshoe %>%
             mean = mean(total, ra.nm = TRUE), 
             median = median(total, ra.nm = TRUE), 
             total = n())
+#found stats for variables with juvenile hare data frame 
 ```
 
 #Juvenile Hare Weights 
@@ -60,21 +68,26 @@ weights_j_snowshoe <- snowshoe %>%
   filter(age == "j") %>% 
   group_by(age, weight, grid, sex) %>% 
   summarise(total =n())
+#created new data frame for juvenile hare that includes age, weight, grid, and sex
 ```
 
 ```{r}
-ggplot(data = weights_j_snowshoe, aes(x = weight, fill = sex)) + 
-  geom_histogram(position = position_dodge(), binwidth = 40) +
-  facet_wrap(~ grid) +
+ggplot(data = weights_j_snowshoe, aes(y = weight, x = total, fill = sex)) + 
+  geom_col(position = position_dodge()) + #created graph
+  facet_wrap(~ grid) + #faceted by grid
   labs(title = "Juvenile snowshoe weight by site", 
-       y = "Number of hares", 
-       x = "Hare weight (g)")
-  theme(legend.position = c(0.1, 0.8))
+       x = "Number of hares", 
+       y = "Hare weight (g)",
+       fill = "Sex") + #labeled graph
+  scale_color_discrete(labels = c("Female", "Male", "Not recorded")) + #change use if base matches then this
+  theme(legend.position = c(0.9, 0.85), 
+        legend.key.size = unit(0.3, 'cm')) #changed graph visuals 
 ```
-FIGURE 2 GOES HERE 
+<b> FIGURE 2: </b> The above data represent the amount of hares compared to weight (g). The data is divided by the three different sites Bonbs, Bonmat, Bonrip. Bonrip has the most data in hares and the highest recored weight (g).  
 
 Analysis goes here 
 #Juvenile hare weight comparison (male & female snowshoe hares)
+
 
 ```{r}
 stats_snowshoe <- weights_j_snowshoe %>% 
@@ -82,29 +95,45 @@ stats_snowshoe <- weights_j_snowshoe %>%
   summarise(mean = mean(weight, na.rm = TRUE),
             standard_deviation = sd(weight, na.rm = TRUE),
             sample_size = n())
+#created new data frame with statistics on j hare weights 
 ```
 
 ```{r}
 stats_snowshoe %>% 
-kable(col.name = c("Sex", "Mean Weight (g)", "Standard Deviation (g)", "Sample Size")) %>% 
+kable(col.name = c("Sex", "Mean Weight (g)", "Standard Deviation (g)", "Sample Size"), #created graph
+      caption = "<b> Table 1: </b> The table below shows the difference between mean female hare weight (g) and mean male hare weight(g). Males have a higher mean weight by 81.63 grams.") %>%  #added caption 
   kable_styling(full_width = FALSE)
+#created visual on snowshoe statistics 
 ```
 
-ADD IN CAPTION AND DATA ANAYLSIS 
+
+DATA ANAYLSIS 
 
 
 #Relationship between juvenile weight and hind foot length 
 
 ```{r}
-j_snowshoe <- snowshoe %>% 
+j_snowshoes <- snowshoe %>% 
   filter(age == "j") %>% 
   group_by(weight, hindft) %>% 
   summarise(total = n())
+#created new data frame to help compare weight by hind feet
 ```
 
 ```{r}
-ggplot(data = j_snowshoe, aes(y = weight, x = hindft)) + 
-  geom_jitter() + 
-  labs(titel = "Juvenile hares weight vs hindfeet", x = "Hindfeet Length (mm)", y = "Weight (g)")
+#relationship between juvenile weight and hind foot length
+ggplot(data = j_snowshoes, aes(y = weight, x = hindft)) + 
+  geom_jitter() + #created graph
+  labs(title = "Juvenile hares weight vs hindfeet", x = "Hindfeet Length (mm)", y = "Weight (g)") #edited graph labels 
+```
+<b> Figure 3: </b> The above graph shows a positive correlation between weight (g) and hind feet (mm). 
+
+#Linear regression: 
+
+```{r}
+#linear regression 
+lm_j_snowshoes <- lm(hindft ~ weight, data = j_snowshoes)
+lm_j_snowshoes
+summary(lm_j_snowshoes)
 ```
 
