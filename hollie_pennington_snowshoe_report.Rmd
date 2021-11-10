@@ -23,7 +23,7 @@ The report shows a comparison between of weight for juvenile snowshoe hares, Lep
 
 Data and analyses: The data in this exploratory report was accumulated by Kiellend et al. 2017. To analyse and compare data I used bar graphs, box plots, and linear regression visuals, along with exploratory histograms and qq plots that are not depicted. To find statistical relevance I tested for means, standard deviations, R2, Cohen's D, unpaired two-sample t-tests, and Pearson's r correlation. 
 
-## Junenile Hare Initial Investigation 
+## Juvenile Hare Initial Investigation 
 
 ```{r}
 snowshoe <- read_csv(here("data","bonanza_hares.csv")) %>% 
@@ -44,15 +44,15 @@ j_snowshoe <- snowshoe %>%
 
 ```{r}
 ggplot(data = j_snowshoe, aes(x = year, y = total)) + 
-  geom_col() + 
+  geom_col(fill = "blue", color = "black") + 
   labs(title = "Annual juvenile hare trap count", x = "Year", y = "Total number of juvenile hares") + 
   theme_test()
 #created bar graph comparing year to the number of hares trapped 
 ```
 
-<b> Figure 1: </b> This graph above represents the total number of juvenile hare trappings from year 1998 to 2012. The year with the most trappings is 1999. The year with the least trappings is 2010.     
+<b> Figure 1: </b> This graph above represents the total number of juvenile hare trappings from year 1998 to 2012. The year with the most trappings is 1999. The year with the least trappings is 2010. The graph above suggest a declining population of juvenile snowshoe hares.      
 
-Data analysis: The minimum amount of snowshoes that were found in one single year was 2. The highest number of snowshoes found in one year was 126. The median amount of snowshoes being trapped throughout the years is 18.5. The mean amount of hares trapped every year was 12. I suspect that there are confounding factors such as effort, number of traps, and hare location at play that inpacted the data. In future studies the confouding factors can be reduced by making sure all human efforts and methods are consistent throughout the years. 
+Takeaways: The minimum amount of snowshoes that were found in one single year was 2. The highest number of snowshoes found in one year was 126. The median amount of snowshoes being trapped throughout the years is 18.5. The mean amount of hares trapped every year was 12. I suspect that there are confounding factors such as effort, number of traps, and hare location at play that inpacted the data. In future studies the confouding factors can be reduced by making sure all human efforts and methods are consistent throughout the years. 
 
 
 ```{r}
@@ -107,10 +107,11 @@ ggplot(data = weights_j_snowshoe, aes(x = sex, y = weight, fill = sex)) +
   labs(title = "Comparing juvenile snowshoe weight and by site",
        x = "Sex", 
        y = "Weight (g)")+
-  theme_get()
+  stat_summary(show.legend = FALSE) +
+  theme_test()
 ```
 
-<b> FIGURE 2: </b> The above box plot represents hare weight (g) compared to hare sex. The data is divided by the three different sites Bonbs, Bonmat, Bonrip.   
+<b> FIGURE 2: </b> The above box plot represents hare weight (g) compared to hare sex. The data is divided by the three different sites Bonbs, Bonmat, Bonrip. The large black dots represent the mean value along with the standard deviation. 
 
 Takeaways: The median weight for male snowshoe hares in larger than the median weight for female snowshoe hares. In the Bonbs site and the Bonmat site there is a larger variance in female weight then there is in male weight. Female hares tend to have a more evenly distribute weight. 
  
@@ -183,7 +184,9 @@ j_snowshoes <- snowshoe %>%
 #relationship between juvenile weight and hind foot length
 ggplot(data = j_snowshoes, aes(y = weight, x = hindft)) + 
   geom_jitter() + #created graph
-  labs(title = "Juvenile hares weight vs hind feet", x = "Hind feet length (mm)", y = "Weight (g)") #edited graph labels 
+  geom_smooth(method = lm) + #added tred line
+  labs(title = "Juvenile hares weight vs hind feet", x = "Hind feet length (mm)", y = "Weight (g)") + #edited graph labels
+  theme_test()
 ```
 
 <b> Figure 3: </b> The above graph shows a positive correlation between weight (g) and hind feet (mm) in juvenile snowshoe hares. 
