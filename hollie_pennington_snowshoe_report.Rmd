@@ -18,9 +18,12 @@ library(kableExtra)
 library(effsize)
 ```
 
-#Introduction: The report shows a comparison between of weight for juvenile snowshoe hares, Lepus americanus. Weight is compared by sex and site and is compared to the size of hind feet. Samples were collected in Alasksa from the Tanana valley between the years 1999 and 2012. Weight is compared by site and sex (Kiellend et al. 2017). 
+# Introduction: 
+The report shows a comparison between of weight for juvenile snowshoe hares, Lepus americanus. Weight is compared by sex and site and is compared to the size of hind feet. Samples were collected in Alasksa from the Tanana valley between the years 1999 and 2012. Weight is compared by site and sex (Kiellend et al. 2017). 
 
-Data and analyses: The data in this exploratory report was accumulated by Kiellend et al. 2017. To analys and compare data I used bar graphs, box plots, and linear regression visuals, along with exploratoy histograms and qq plots that are not depicted. To find stastical relevance I tested for means, standard deviations, R2, cohen's D, unpaired two-sample t-tests, and Pearson's r correlation. 
+Data and analyses: The data in this exploratory report was accumulated by Kiellend et al. 2017. To analys and compare data I used bar graphs, box plots, and linear regression visuals, along with exploratory histograms and qq plots that are not depicted. To find statistical relevance I tested for means, standard deviations, R2, Cohen's D, unpaired two-sample t-tests, and Pearson's r correlation. 
+
+## Junenile Hare Initial Investigation 
 
 ```{r}
 snowshoe <- read_csv(here("data","bonanza_hares.csv")) %>% 
@@ -62,7 +65,7 @@ j_snowshoe_stats <- j_snowshoe %>%
 #found stats for variables with juvenile hare data frame 
 ```
 
-##Juvenile Hare Weights 
+## Juvenile Hare Weights 
 
 ```{r}
 weights_j_snowshoe <- snowshoe %>% 
@@ -109,9 +112,9 @@ ggplot(data = weights_j_snowshoe, aes(x = sex, y = weight, fill = sex)) +
 
 <b> FIGURE 2: </b> The above box plot represents hare weight (g) compared to hare sex. The data is divided by the three different sites Bonbs, Bonmat, Bonrip.   
 
-Analyses: The median weight for male snowshoe hares in larger than the median wieght for female snowshoe hares. In the Bonbs site and the Bonmat site there is a larger varaince in female wieght then there is in male weight.   
+Analyses: The median weight for male snowshoe hares in larger than the median weight for female snowshoe hares. In the Bonbs site and the Bonmat site there is a larger variance in female weight then there is in male weight.   
 
-##Juvenile hare weight comparison (male & female snowshoe hares)
+## Juvenile hare weight comparison (male & female snowshoe hares)
 
 
 ```{r}
@@ -166,8 +169,7 @@ cd_j_hare
  
 Data analysis: The difference in means between the female hares and males hares is `r round(ttest_j_hare$estimate[1],2)` g,  with the male hares having the larger mean. The effect size is very small (Cohen's d = `r round(cd_j_hare$estimate,2)`) and difference significant. There is a less than 5% chance that the samples were drawn from populations with different sizes (P-value = 0.049).
 
-
-##Relationship between juvenile weight and hind foot length 
+## Relationship between juvenile weight and hind foot length 
 
 ```{r}
 j_snowshoes <- snowshoe %>% 
@@ -186,7 +188,7 @@ ggplot(data = j_snowshoes, aes(y = weight, x = hindft)) +
 
 <b> Figure 3: </b> The above graph shows a positive correlation between weight (g) and hind feet (mm) in juvenile snowshoe hares. 
 
-##Linear regression: 
+## Linear regression: 
 
 ```{r, include = FALSE}
 #linear regression 
@@ -194,13 +196,15 @@ lm_j_snowshoes <- lm(hindft ~ weight, data = j_snowshoes)
 lm_j_snowshoes
 summary(lm_j_snowshoes)
 ```
+
 Analysis: 
 
 ```{r, include = FALSE}
 plot(lm_j_snowshoes)
 ```
 
-#Summary: I found that there is a decline in population of snow shoe hares. Male snowshoe hares on average have a larger weight than female snowshoe hares. There is a positive correlation between weight and hindfeet. 
+## Summary: 
+I found that there is a decline in population of snow shoe hares. Male snowshoe hares on average have a larger weight than female snowshoe hares. There is a positive correlation between weight and hind feet. 
 
-###Citation: 
+### Citation: 
 Kielland, K., F.S. Chapin, R.W. Ruess, and Bonanza Creek LTER. 2017. Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present ver 22. Environmental Data Initiative. https://doi.org/10.6073/pasta/03dce4856d79b91557d8e6ce2cbcdc14 (Accessed 2021-11-10). 
