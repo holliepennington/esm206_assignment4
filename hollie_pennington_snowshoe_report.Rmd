@@ -13,6 +13,7 @@ library(tidyverse)
 library(janitor)
 library(lubridate)
 library(kableExtra)
+library(effsize)
 ```
 
 ```{r}
@@ -70,13 +71,19 @@ weights_j_snowshoe <- snowshoe %>%
    mutate(sex = case_when(
     sex == "f" ~ "Female", 
     sex == "m" ~ "Male",
-    sex == "TRUE" ~ "Unknown")) %>% #changed names 
+    sex == "FALSE" ~ "Unknown")) %>% 
+  mutate(grid = case_when(
+    grid == "bonbs" ~ "Bonbs", 
+    grid == "bonmat" ~ "Bonmat", 
+    grid == "bonrip" ~ "Bonrip"
+  )) %>% #changed names 
   group_by(sex, weight, grid, age) %>% 
   summarise(total = n())
 #created new data frame for juvenile hare that includes age, weight, grid, and sex
 ```
 
-```{r}
+```{r, include = FALSE}
+#Attempted visualization, did not like graph, not including in knitted document but I worked really hard on this and dont want to delete it in case I need the reference later
 ggplot(data = weights_j_snowshoe, aes(y = weight, x = total, fill = sex)) + 
   geom_col(position = position_dodge()) + #created graph
   facet_wrap(~ grid) + #faceted by grid
@@ -89,9 +96,21 @@ ggplot(data = weights_j_snowshoe, aes(y = weight, x = total, fill = sex)) +
         legend.text = element_text(size = 7), 
         legend.title = element_text(size = 8)) #changed graph visuals 
 ```
-<b> FIGURE 2: </b> The above data represent the amount of hares compared to weight (g). The data is divided by the three different sites Bonbs, Bonmat, Bonrip. Bonrip has the most data in hares and the highest recored weight (g).  
+
+```{r}
+ggplot(data = weights_j_snowshoe, aes(x = sex, y = weight, fill = sex)) + 
+  geom_boxplot(show.legend = FALSE) + #created graph
+  facet_wrap(~ grid) + #faceted by grid
+  labs(title = "Comparing juvenile snowshoe weight and by site",
+       x = "Sex", 
+       y = "Weight (g)")+
+  theme_get()
+```
+
+<b> FIGURE 2: </b> The above box plot represents hare weight (g) compared to hare sex. The data is divided by the three different sites Bonbs, Bonmat, Bonrip.   
 
 Analysis goes here 
+
 #Juvenile hare weight comparison (male & female snowshoe hares)
 
 
@@ -127,17 +146,30 @@ ggplot(data = weights_j_snowshoe, aes(sample = weight)) +
 ```
 
 ```{r}
-#split df into different groups, then run t test 
+f_hare <- weights_j_snowshoe %>% 
+  filter(sex == "Female") %>% 
+  pull(weight)
 
+m_hare <- weights_j_snowshoe %>% 
+  filter(sex == "Male") %>% 
+  pull(weight)
 
+ttest_j_hare <- t.test(f_hare, 
+                       m_hare)
+ttest_j_hare
+
+cd_j_hare <- cohen.d(f_hare,
+                     m_hare, 
+                     na.rm = TRUE)
+
+cd_j_hare
 ```
-compact_sample <- compact_suv %>% 
-  filter(class == "compact") %>% 
-  pull(cty)
 
-suv_sample <- compact_suv %>% 
-  filter(class == "suv") %>% 
-  pull(cty)
+
+juv_hare_cd <- cohen.d(juv_hare_f, 
+                       juv_hare_m, 
+                       na.rm = TRUE)
+juv_hare_cd
 
  
 #Relationship between juvenile weight and hind foot length 
