@@ -5,7 +5,7 @@ date: "11/4/2021"
 output: html_document
 ---
 
-```{r setup, include = FALSE, warnings = FALSE}
+```{r setup, include = FALSE, warnings = FALSE, echo = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #install packages
 library(here)
@@ -34,7 +34,7 @@ snowshoe <- read_csv(here("data","bonanza_hares.csv")) %>%
 j_snowshoe <- snowshoe %>% 
   filter(age == "j") %>% 
   group_by(age, year) %>% 
-  summarise(total = n())
+  summarise(total = n()) 
 #created new data frame including only juvenile hares and they are grouped by age and year. 
 ```
 
@@ -66,8 +66,13 @@ j_snowshoe_stats <- j_snowshoe %>%
 ```{r}
 weights_j_snowshoe <- snowshoe %>% 
   filter(age == "j") %>% 
-  group_by(age, weight, grid, sex) %>% 
-  summarise(total =n())
+  select(age, weight, grid, sex) %>% 
+   mutate(sex = case_when(
+    sex == "f" ~ "Female", 
+    sex == "m" ~ "Male",
+    sex == "TRUE" ~ "Unknown")) %>% #changed names 
+  group_by(sex, weight, grid, age) %>% 
+  summarise(total = n())
 #created new data frame for juvenile hare that includes age, weight, grid, and sex
 ```
 
@@ -78,10 +83,11 @@ ggplot(data = weights_j_snowshoe, aes(y = weight, x = total, fill = sex)) +
   labs(title = "Juvenile snowshoe weight by site", 
        x = "Number of hares", 
        y = "Hare weight (g)",
-       fill = "Sex") + #labeled graph
-  scale_color_discrete(labels = c("Female", "Male", "Not recorded")) + #change use if base matches then this
+       fill = "Sex") +
   theme(legend.position = c(0.9, 0.85), 
-        legend.key.size = unit(0.3, 'cm')) #changed graph visuals 
+        legend.key.size = unit(0.3, 'cm'), 
+        legend.text = element_text(size = 7), 
+        legend.title = element_text(size = 8)) #changed graph visuals 
 ```
 <b> FIGURE 2: </b> The above data represent the amount of hares compared to weight (g). The data is divided by the three different sites Bonbs, Bonmat, Bonrip. Bonrip has the most data in hares and the highest recored weight (g).  
 
