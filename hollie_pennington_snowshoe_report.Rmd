@@ -7,8 +7,8 @@ output:
   pdf_document: default
 ---
 
-```{r setup, include = FALSE, warnings = FALSE, echo = FALSE, messages = FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```{r setup, include = FALSE, warning = FALSE, echo = FALSE, messages = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center')
 #install packages
 library(here)
 library(tidyverse)
@@ -19,9 +19,9 @@ library(effsize)
 ```
 
 # Introduction: 
-The report shows a comparison between of weight for juvenile snowshoe hares, Lepus americanus. Weight is compared by sex and site and is compared to the size of hind feet. Samples were collected in Alasksa from the Tanana valley between the years 1999 and 2012. Weight is compared by site and sex (Kiellend et al. 2017). 
+The report shows a comparison between of weight for juvenile snowshoe hares, Lepus americanus. Weight is compared by sex and site and is compared to the size of hind feet. Samples were collected in Alaska from the Tanana valley between the years 1999 and 2012. Weight is compared by site and sex (Kiellend et al. 2017). 
 
-Data and analyses: The data in this exploratory report was accumulated by Kiellend et al. 2017. To analys and compare data I used bar graphs, box plots, and linear regression visuals, along with exploratory histograms and qq plots that are not depicted. To find statistical relevance I tested for means, standard deviations, R2, Cohen's D, unpaired two-sample t-tests, and Pearson's r correlation. 
+Data and analyses: The data in this exploratory report was accumulated by Kiellend et al. 2017. To analyse and compare data I used bar graphs, box plots, and linear regression visuals, along with exploratory histograms and qq plots that are not depicted. To find statistical relevance I tested for means, standard deviations, R2, Cohen's D, unpaired two-sample t-tests, and Pearson's r correlation. 
 
 ## Junenile Hare Initial Investigation 
 
@@ -74,7 +74,7 @@ weights_j_snowshoe <- snowshoe %>%
    mutate(sex = case_when(
     sex == "f" ~ "Female", 
     sex == "m" ~ "Male",
-    sex == "FALSE" ~ "Unknown")) %>% 
+    TRUE ~ "Unknown")) %>% 
   mutate(grid = case_when(
     grid == "bonbs" ~ "Bonbs", 
     grid == "bonmat" ~ "Bonmat", 
@@ -112,8 +112,8 @@ ggplot(data = weights_j_snowshoe, aes(x = sex, y = weight, fill = sex)) +
 
 <b> FIGURE 2: </b> The above box plot represents hare weight (g) compared to hare sex. The data is divided by the three different sites Bonbs, Bonmat, Bonrip.   
 
-Analyses: The median weight for male snowshoe hares in larger than the median weight for female snowshoe hares. In the Bonbs site and the Bonmat site there is a larger variance in female weight then there is in male weight.   
-
+Takeaways: The median weight for male snowshoe hares in larger than the median weight for female snowshoe hares. In the Bonbs site and the Bonmat site there is a larger variance in female weight then there is in male weight. Female hares tend to have a more evenly distribute weight. 
+ 
 ## Juvenile hare weight comparison (male & female snowshoe hares)
 
 
@@ -167,7 +167,7 @@ cd_j_hare <- cohen.d(f_hare,
 cd_j_hare
 ```
  
-Data analysis: The difference in means between the female hares and males hares is `r round(ttest_j_hare$estimate[1],2)` g,  with the male hares having the larger mean. The effect size is very small (Cohen's d = `r round(cd_j_hare$estimate,2)`) and difference significant. There is a less than 5% chance that the samples were drawn from populations with different sizes (P-value = 0.049).
+Takeaways: The difference in means between the female hares and males hares is `r round(ttest_j_hare$estimate[1],2)` g,  with the male hares having the larger mean. The effect size is very small (Cohen's d = `r round(cd_j_hare$estimate,2)`) and difference significant. There is a less than 5% chance that the samples were drawn from populations with different sizes (P-value = 0.049).
 
 ## Relationship between juvenile weight and hind foot length 
 
@@ -183,7 +183,7 @@ j_snowshoes <- snowshoe %>%
 #relationship between juvenile weight and hind foot length
 ggplot(data = j_snowshoes, aes(y = weight, x = hindft)) + 
   geom_jitter() + #created graph
-  labs(title = "Juvenile hares weight vs hindfeet", x = "Hindfeet Length (mm)", y = "Weight (g)") #edited graph labels 
+  labs(title = "Juvenile hares weight vs hind feet", x = "Hind feet length (mm)", y = "Weight (g)") #edited graph labels 
 ```
 
 <b> Figure 3: </b> The above graph shows a positive correlation between weight (g) and hind feet (mm) in juvenile snowshoe hares. 
@@ -195,9 +195,16 @@ ggplot(data = j_snowshoes, aes(y = weight, x = hindft)) +
 lm_j_snowshoes <- lm(hindft ~ weight, data = j_snowshoes)
 lm_j_snowshoes
 summary(lm_j_snowshoes)
+
+cor_j_hare <- cor.test(j_snowshoes$weight, j_snowshoes$hindft)
+
+cor_j_hare
 ```
 
-Analysis: 
+Takeaways:  The relationship between weight(g) and hind feet length (mm) is explored across juvenile hares across all three sites. Further analysis can be completed on the relationship between sex, weight, and hind feet length. 
+
+The relationship between weight (g) and hind feet length (mm) explored in figure three reveals positive linear relationship, indicating that weight (g) and hind feet length (mm) and correlated. Simple linear regressions shows that hind feet length significantly predicts snowshoe hare weight (g) (p < 0.001, R2 = 0.297) with an average slope of  β = 0.0314 g. For each one millimeter in hind feet we can expect on average an increase of weight in grams of 0.0314. Weight and hind feet length are significantly and positively correlated (Person's r = 0.55, p < 0.001). Diagnostic plots (not included) reveal relatively normally distributed and heteroscedastic residuals. 
+
 
 ```{r, include = FALSE}
 plot(lm_j_snowshoes)
