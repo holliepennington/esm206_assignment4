@@ -2,11 +2,13 @@
 title: "ESM 206 A3 Task2"
 author: "Hollie Pennington"
 date: "11/4/2021"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
-```{r setup, include = FALSE, warnings = FALSE, echo = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE, warnings = FALSE, echo = FALSE, messages = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 #install packages
 library(here)
 library(tidyverse)
@@ -16,6 +18,10 @@ library(kableExtra)
 library(effsize)
 ```
 
+#Introduction: The report shows a comparison between of weight for juvenile snowshoe hares, Lepus americanus. Weight is compared by sex and site and is compared to the size of hind feet. Samples were collected in Alasksa from the Tanana valley between the years 1999 and 2012. Weight is compared by site and sex (Kiellend et al. 2017). 
+
+##Data and analyses: The data in this exploratory report was accumulated by Kiellend et al. 2017. To analys and compare data I used bar graphs, box plots, and linear regression visuals, along with exploratoy histograms and qq plots that are not depicted. To find stastical relevance I tested for means, standard deviations, R2, cohen's D, unpaired two-sample t-tests, and Pearson's r correlation. 
+
 ```{r}
 snowshoe <- read_csv(here("data","bonanza_hares.csv")) %>% 
   clean_names() %>% 
@@ -24,12 +30,6 @@ snowshoe <- read_csv(here("data","bonanza_hares.csv")) %>%
 #read in data 
 #made a year column using mutate
 ```
-
-#INTRODUCTION HERE 
-##Citation: Kielland, K., F.S. Chapin, R.W. Ruess, and Bonanza Creek LTER. 2017. Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present ver 22. Environmental Data Initiative. https://doi.org/10.6073/pasta/03dce4856d79b91557d8e6ce2cbcdc14
-
-## DATA ANALYSES HERE 
-
 
 ```{r}
 j_snowshoe <- snowshoe %>% 
@@ -46,8 +46,8 @@ ggplot(data = j_snowshoe, aes(x = year, y = total)) +
   theme_test()
 #created bar graph comparing year to the number of hares trapped 
 ```
-<b> Figure 1: </b> This graph above represents the total number of juvenile hare trappings from year 1998 to 2012. The year with the most trappings is 1999. The year with the least trappings is 2010.     
 
+<b> Figure 1: </b> This graph above represents the total number of juvenile hare trappings from year 1998 to 2012. The year with the most trappings is 1999. The year with the least trappings is 2010.     
 
 #Data analysis: The minimum amount of snowshoes that were found in one single year was 2. The highest number of snowshoes found in one year was 126. The median amount of snowshoes being trapped throughout the years is 18.5. The mean amount of hares trapped every year was 12. I suspect that there are confounding factors such as effort, number of traps, and hare location at play that inpacted the data. In future studies the confouding factors can be reduced by making sure all human efforts and methods are consistent throughout the years. 
 
@@ -83,7 +83,7 @@ weights_j_snowshoe <- snowshoe %>%
 ```
 
 ```{r, include = FALSE}
-#Attempted visualization, did not like graph, not including in knitted document but I worked really hard on this and dont want to delete it in case I need the reference later
+#Attempted visualization, did not like graph, not including in knitted document but I worked really hard on this and don't want to delete it in case I need the reference later
 ggplot(data = weights_j_snowshoe, aes(y = weight, x = total, fill = sex)) + 
   geom_col(position = position_dodge()) + #created graph
   facet_wrap(~ grid) + #faceted by grid
@@ -109,13 +109,14 @@ ggplot(data = weights_j_snowshoe, aes(x = sex, y = weight, fill = sex)) +
 
 <b> FIGURE 2: </b> The above box plot represents hare weight (g) compared to hare sex. The data is divided by the three different sites Bonbs, Bonmat, Bonrip.   
 
-Analysis goes here 
+#Analyses: The median weight for male snowshoe hares in larger than the median wieght for female snowshoe hares. In the Bonbs site and the Bonmat site there is a larger varaince in female wieght then there is in male weight.   
 
 #Juvenile hare weight comparison (male & female snowshoe hares)
 
 
 ```{r}
 stats_snowshoe <- weights_j_snowshoe %>% 
+  select(sex) %>% 
   group_by(sex) %>% 
   summarise(mean = mean(weight, na.rm = TRUE),
             standard_deviation = sd(weight, na.rm = TRUE),
@@ -131,8 +132,6 @@ kable(col.name = c("Sex", "Mean Weight (g)", "Standard Deviation (g)", "Sample S
 #created visual on snowshoe statistics 
 ```
 
-
-DATA ANAYLSIS 
 ```{r, include = FALSE}
 ggplot(data = weights_j_snowshoe, aes(x = weight)) + 
   geom_histogram(bins = 15) + 
@@ -145,7 +144,7 @@ ggplot(data = weights_j_snowshoe, aes(sample = weight)) +
 #based on outcome of graphs and number of samples, I feel confident that I can do a t-test. 
 ```
 
-```{r}
+```{r, include = FALSE}
 f_hare <- weights_j_snowshoe %>% 
   filter(sex == "Female") %>% 
   pull(weight)
@@ -164,14 +163,10 @@ cd_j_hare <- cohen.d(f_hare,
 
 cd_j_hare
 ```
-
-
-juv_hare_cd <- cohen.d(juv_hare_f, 
-                       juv_hare_m, 
-                       na.rm = TRUE)
-juv_hare_cd
-
  
+Data analysis: Mean weight for female juvenile snowshoe hare ('r round(f_hare$estimate[1],2)'g) is less than that of male juvenile snowshoe hares by ('r round(m_hare$estimate[2],2)'g). The effect size is very small (Cohen's *d* = 'r round(cd_j_hare)') and difference sigificant (two-sample t-test, t = 'r round (ttest_j_hare,2)' p < 0.05).
+
+
 #Relationship between juvenile weight and hind foot length 
 
 ```{r}
@@ -188,18 +183,24 @@ ggplot(data = j_snowshoes, aes(y = weight, x = hindft)) +
   geom_jitter() + #created graph
   labs(title = "Juvenile hares weight vs hindfeet", x = "Hindfeet Length (mm)", y = "Weight (g)") #edited graph labels 
 ```
-<b> Figure 3: </b> The above graph shows a positive correlation between weight (g) and hind feet (mm). 
+
+<b> Figure 3: </b> The above graph shows a positive correlation between weight (g) and hind feet (mm) in juvenile snowshoe hares. 
 
 #Linear regression: 
 
-```{r}
+```{r, include = FALSE}
 #linear regression 
 lm_j_snowshoes <- lm(hindft ~ weight, data = j_snowshoes)
 lm_j_snowshoes
 summary(lm_j_snowshoes)
 ```
+Analysis: 
 
 ```{r, include = FALSE}
 plot(lm_j_snowshoes)
 ```
 
+##Summary: I found that there is a decline in population of snow shoe hares. Male snowshoe hares on average have a larger weight than female snowshoe hares. There is a positive correlation between weight and hindfeet. 
+
+###Citation: 
+Kielland, K., F.S. Chapin, R.W. Ruess, and Bonanza Creek LTER. 2017. Snowshoe hare physical data in Bonanza Creek Experimental Forest: 1999-Present ver 22. Environmental Data Initiative. https://doi.org/10.6073/pasta/03dce4856d79b91557d8e6ce2cbcdc14 (Accessed 2021-11-10). 
